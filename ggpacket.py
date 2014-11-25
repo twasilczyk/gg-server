@@ -29,6 +29,10 @@ class Notify105Last:
 			data = data[(uin_len + 1):]
 			self.blist.append(int(uin))
 
+class Ping:
+	def __init__(self):
+		pass
+
 def parsePacket(p_type, p_data):
 	if (p_type == ggproto.LOGIN105):
 		p = packets_pb2.GG105Login()
@@ -38,6 +42,8 @@ def parsePacket(p_type, p_data):
 		p = Notify105Last()
 		p.ParseFromString(p_data)
 		return p
+	elif (p_type == ggproto.PING):
+		return Ping()
 	else:
 		return None
 
@@ -94,3 +100,11 @@ class UserData(GGPacket):
 		for uin in self.blist:
 			p = p + struct.pack("<II", uin, 0)
 		return p
+
+class Pong110(GGPacket):
+	def __init__(self):
+		GGPacket.__init__(self, ggproto.PONG110)
+	def body(self):
+		p = packets_pb2.GG110Pong()
+		p.server_time = int(time.time())
+		return p.SerializeToString()

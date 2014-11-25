@@ -57,6 +57,8 @@ class GGServer(SocketServer.BaseRequestHandler):
 				self.send(ggpacket.Status80(self.uin))
 				self.send(ggpacket.NotifyReply80(p.blist))
 				self.send(ggpacket.UserData(p.blist))
+			elif (isinstance(p, ggpacket.Ping)):
+				self.send(ggpacket.Pong110())
 		print "client disconnected"
 
 server = SocketServer.TCPServer(('0.0.0.0', 8074), GGServer)
