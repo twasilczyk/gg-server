@@ -4,6 +4,9 @@ import time
 import ggproto
 import packets_pb2
 
+def readUIN(data):
+	return int(data[2:])
+
 class GGPacket:
 	def __init__(self, pid):
 		self.pid = pid
@@ -16,16 +19,27 @@ class GGPacket:
 		header = struct.pack("<II", self.pid, len(b))
 		return header + b
 
+class Notify105Last:
+	def ParseFromString(self, data):
+		self.blist = []
+		while (len(data) > 0):
+			(_, uin_len) = struct.unpack("=BB", data[:2])
+			data = data[2:]
+			uin = data[:uin_len]
+			data = data[(uin_len + 1):]
+			self.blist.append(int(uin))
+
 def parsePacket(p_type, p_data):
 	if (p_type == ggproto.LOGIN105):
 		p = packets_pb2.GG105Login()
 		p.ParseFromString(p_data)
 		return p
+	elif (p_type == ggproto.NOTIFY105_LAST):
+		p = Notify105Last()
+		p.ParseFromString(p_data)
+		return p
 	else:
 		return None
-
-def readUIN(data):
-	return int(data[2:])
 
 class Welcome(GGPacket):
 	def __init__(self):
@@ -44,3 +58,13 @@ class Login110OK(GGPacket):
 		p.uin = self.uin
 		p.server_time = int(time.time())
 		return p.SerializeToString()
+
+class NotifyReply80(GGPacket):
+	def __init__(self, blist):
+		GGPacket.__init__(self, ggproto.NOTIFY_REPLY80)
+		self.blist = blist
+	def body(self):
+		p = ""
+		for uin in self.blist:
+			p = p + struct.pack("<IIIIhBBII", uin, ggproto.STATUS_AVAIL, 0, 0, 0, 255, 0, 0, 0)
+		return p

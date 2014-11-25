@@ -21,7 +21,7 @@ class GGServer(SocketServer.BaseRequestHandler):
 					return None
 				else:
 					retry = True
-					time.sleep(2)
+					time.sleep(1)
 			else:
 				retry = False
 			total = total + got
@@ -51,6 +51,8 @@ class GGServer(SocketServer.BaseRequestHandler):
 			p = self.recvPacket()
 			if (isinstance(p, packets_pb2.GG105Login)):
 				self.send(ggpacket.Login110OK(ggpacket.readUIN(p.uin)))
+			elif (isinstance(p, ggpacket.Notify105Last)):
+				self.send(ggpacket.NotifyReply80(p.blist))
 		print "client disconnected"
 
 server = SocketServer.TCPServer(('0.0.0.0', 8074), GGServer)
