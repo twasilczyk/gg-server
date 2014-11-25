@@ -59,6 +59,14 @@ class Login110OK(GGPacket):
 		p.server_time = int(time.time())
 		return p.SerializeToString()
 
+class IMToken(GGPacket):
+	def __init__(self):
+		GGPacket.__init__(self, ggproto.IMTOKEN)
+	def body(self):
+		p = packets_pb2.GG110Imtoken()
+		p.imtoken = "1234567890123456789012345678901234567890"
+		return p.SerializeToString()
+
 class Status80(GGPacket):
 	def __init__(self, uin):
 		GGPacket.__init__(self, ggproto.STATUS80)

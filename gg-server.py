@@ -52,7 +52,8 @@ class GGServer(SocketServer.BaseRequestHandler):
 			if (isinstance(p, packets_pb2.GG105Login)):
 				self.uin = ggpacket.readUIN(p.uin)
 				self.send(ggpacket.Login110OK(self.uin))
-				# not sent: IMTOKEN, OPTIONS
+				self.send(ggpacket.IMToken())
+				# not sent: OPTIONS
 			elif (isinstance(p, ggpacket.Notify105Last)):
 				self.send(ggpacket.Status80(self.uin))
 				self.send(ggpacket.NotifyReply80(p.blist))
