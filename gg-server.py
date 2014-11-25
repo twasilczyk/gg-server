@@ -50,8 +50,11 @@ class GGServer(SocketServer.BaseRequestHandler):
 		while self.is_valid:
 			p = self.recvPacket()
 			if (isinstance(p, packets_pb2.GG105Login)):
-				self.send(ggpacket.Login110OK(ggpacket.readUIN(p.uin)))
+				self.uin = ggpacket.readUIN(p.uin)
+				self.send(ggpacket.Login110OK(self.uin))
+				# not sent: IMTOKEN, OPTIONS
 			elif (isinstance(p, ggpacket.Notify105Last)):
+				self.send(ggpacket.Status80(self.uin))
 				self.send(ggpacket.NotifyReply80(p.blist))
 		print "client disconnected"
 

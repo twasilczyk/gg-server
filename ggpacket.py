@@ -59,6 +59,13 @@ class Login110OK(GGPacket):
 		p.server_time = int(time.time())
 		return p.SerializeToString()
 
+class Status80(GGPacket):
+	def __init__(self, uin):
+		GGPacket.__init__(self, ggproto.STATUS80)
+		self.uin = uin
+	def body(self):
+		return struct.pack("<IIIIhBBII", self.uin, ggproto.STATUS_AVAIL, 0, 0, 0, 255, 0, 0, 0)
+
 class NotifyReply80(GGPacket):
 	def __init__(self, blist):
 		GGPacket.__init__(self, ggproto.NOTIFY_REPLY80)
@@ -66,5 +73,6 @@ class NotifyReply80(GGPacket):
 	def body(self):
 		p = ""
 		for uin in self.blist:
+			# XXX: copy-pasta
 			p = p + struct.pack("<IIIIhBBII", uin, ggproto.STATUS_AVAIL, 0, 0, 0, 255, 0, 0, 0)
 		return p
