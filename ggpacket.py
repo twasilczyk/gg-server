@@ -84,3 +84,13 @@ class NotifyReply80(GGPacket):
 			# XXX: copy-pasta
 			p = p + struct.pack("<IIIIhBBII", uin, ggproto.STATUS_AVAIL, 0, 0, 0, 255, 0, 0, 0)
 		return p
+
+class UserData(GGPacket):
+	def __init__(self, blist):
+		GGPacket.__init__(self, ggproto.USER_DATA)
+		self.blist = blist
+	def body(self):
+		p = struct.pack("<II", 3, len(self.blist))
+		for uin in self.blist:
+			p = p + struct.pack("<II", uin, 0)
+		return p
