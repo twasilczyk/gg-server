@@ -34,7 +34,7 @@ class GGServer(SocketServer.BaseRequestHandler):
 			return None
 		(p_type, p_len) = struct.unpack("<II", data)
 		if (p_len == 0):
-			return p_type
+			return ggpacket.parsePacket(p_type, "")
 		p_data = self.recvExactly(p_len)
 		if (not p_data):
 			self.is_valid = False

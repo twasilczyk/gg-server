@@ -1,6 +1,7 @@
 import struct
 import time
 
+import ggproto
 import packets_pb2
 
 class GGPacket:
@@ -16,7 +17,7 @@ class GGPacket:
 		return header + b
 
 def parsePacket(p_type, p_data):
-	if (p_type == 0x83):
+	if (p_type == ggproto.LOGIN105):
 		p = packets_pb2.GG105Login()
 		p.ParseFromString(p_data)
 		return p
@@ -28,13 +29,13 @@ def readUIN(data):
 
 class Welcome(GGPacket):
 	def __init__(self):
-		GGPacket.__init__(self, 0x0001)
+		GGPacket.__init__(self, ggproto.WELCOME)
 	def body(self):
 		return struct.pack("<I", 0x01020304)
 
 class Login110OK(GGPacket):
 	def __init__(self, uin):
-		GGPacket.__init__(self, 0x009D)
+		GGPacket.__init__(self, ggproto.LOGIN110_OK)
 		self.uin = uin
 	def body(self):
 		p = packets_pb2.GG110LoginOK()
