@@ -52,3 +52,5 @@ docs/_build/
 
 # PyBuilder
 target/
+
+packets_pb2.py
