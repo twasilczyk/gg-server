@@ -7,6 +7,10 @@ import packets_pb2
 def readUIN(data):
 	return int(data[2:])
 
+def writeUIN(uin):
+	uin = str(uin)
+	return struct.pack("<BB", 0, len(uin)) + uin
+
 class GGPacket:
 	def __init__(self, pid):
 		self.pid = pid
@@ -107,4 +111,17 @@ class Pong110(GGPacket):
 	def body(self):
 		p = packets_pb2.GG110Pong()
 		p.server_time = int(time.time())
+		return p.SerializeToString()
+
+class MagicNotification(GGPacket):
+	def __init__(self):
+		GGPacket.__init__(self, ggproto.MAGIC_NOTIFICATION)
+	def body(self):
+		p = packets_pb2.GG110MagicNotification()
+		p.dummy1 = 2
+		p.seq = 1
+		p.dummy2 = 1
+		p.dummy3 = 1
+		p.uin = writeUIN(1234567)
+		p.dummy4 = ""
 		return p.SerializeToString()
